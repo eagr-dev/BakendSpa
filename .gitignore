@@ -1,0 +1,62 @@
+# =====================================================================
+# .gitignore para PasswordManager (.NET 10 / Visual Studio)
+# Estructura: Carpetas de proyectos directamente en la raíz del repositorio
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# Configuración y Secretos de la API (PasswordManager.API)
+# =====================================================================
+# .gitignore para DiscordBot (.NET 10 / Clean Architecture)
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# Secretos y Configuración de la API (Global para cualquier subcarpeta)
+# ---------------------------------------------------------------------
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+*.xml
+*.Secret.json
+secrets.json
+.env
+*.env
+
+# ---------------------------------------------------------------------
+# Salidas de Compilación (Aplica a todas las capas y librerías)
+# ---------------------------------------------------------------------
+**/bin/
+**/obj/
+out/
+publish/
+
+# ---------------------------------------------------------------------
+# IDEs y Editores (Visual Studio, VS Code, Rider)
+# ---------------------------------------------------------------------
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# VS Code & JetBrains Rider
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.sln.iml
+
+# ---------------------------------------------------------------------
+# Pruebas y Cobertura de Código
+# ---------------------------------------------------------------------
+TestResults/
+*.coverage
+*.coveragexml
+
+# ---------------------------------------------------------------------
+# Sistema Operativo y Basura Local
+# ---------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini

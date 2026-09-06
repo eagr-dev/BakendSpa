@@ -1,0 +1,34 @@
+# Esta fase se usa para ejecutar la app (Runtime)
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+USER $APP_UID
+WORKDIR /app
+# Puertos estándar para WebAPI
+EXPOSE 8080
+EXPOSE 8081
+
+# Esta fase se usa para compilar el proyecto (SDK)
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+# Copiamos y restauramos (Usando el nombre correcto BackendSpa)
+COPY ["BackendSpa.csproj", "./"]
+RUN dotnet restore "BackendSpa.csproj"
+
+# Copiamos el resto del código y compilamos
+COPY . .
+RUN dotnet build "BackendSpa.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Publicamos la aplicación
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "BackendSpa.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# Fase final: copiar los archivos publicados a la imagen base de runtime
+FROM base AS final
+WORKDIR /app
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "BackendSpa.dll"]

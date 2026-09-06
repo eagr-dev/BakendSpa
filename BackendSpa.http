@@ -1,0 +1,165 @@
+#@BackendSpa_HostAddress = https://localhost:7016
+@BackendSpa_HostAddress = https://66jzwvdq-7016.usw3.devtunnels.ms
+#@BackendSpa_HostAddress = http://localhost:5138
+
+### ✅ Obtener todos los servicios
+GET {{BackendSpa_HostAddress}}/api/servicios
+Accept: application/json
+
+###
+
+### ✅ Obtener servicio por ID existente
+GET {{BackendSpa_HostAddress}}/api/servicios/1
+Accept: application/json
+
+###
+
+### ❌ Obtener servicio por ID que no existe
+GET {{BackendSpa_HostAddress}}/api/servicios/9999
+Accept: application/json
+
+###
+
+### ✅ Verificar disponibilidad en horario libre
+GET {{BackendSpa_HostAddress}}/api/citas/disponibilidad?Fecha=2026-05-09&HoraInicio=10:00:00&HoraFin=11:00:00
+Accept: application/json
+
+###
+
+### ❌ Verificar disponibilidad fuera de horario laboral
+GET {{BackendSpa_HostAddress}}/api/citas/disponibilidad?Fecha=2026-05-08&HoraInicio=20:00:00&HoraFin=10:00:00
+Accept: application/json
+
+###
+
+### ✅ Crear cita correcta
+POST {{BackendSpa_HostAddress}}/api/citas
+Content-Type: application/json
+
+{
+  "nombreCliente": "Edgar",
+  "email": "edgar@gmail.com",
+  "telefono": "+5213312566287",
+  "fecha": "2026-07-21",
+  "horaInicio": "8:00:00",
+  "idServicios": [1]
+}
+
+###
+
+### ❌ Crear cita con email invalido
+POST {{BackendSpa_HostAddress}}/api/citas
+Content-Type: application/json
+
+{
+  "nombreCliente": "Maria Lopez",
+  "email": "esto-no-es-un-email",
+  "telefono": "3312345678",
+  "fecha": "2026-05-06",
+  "horaInicio": "10:00:00",
+  "idServicios": [1, 2]
+}
+
+###
+
+### ❌ Crear cita con servicio que no existe
+POST {{BackendSpa_HostAddress}}/api/citas
+Content-Type: application/json
+
+{
+  "nombreCliente": "Maria Lopez",
+  "email": "maria@gmail.com",
+  "telefono": "3312345678",
+  "fecha": "2026-05-06",
+  "horaInicio": "10:00:00",
+  "idServicios": [9999]
+}
+
+###
+
+### ❌ Crear cita fuera de horario laboral
+POST {{BackendSpa_HostAddress}}/api/citas
+Content-Type: application/json
+
+{
+  "nombreCliente": "Maria Lopez",
+  "email": "maria@gmail.com",
+  "telefono": "3312345678",
+  "fecha": "2026-05-06",
+  "horaInicio": "21:00:00",
+  "idServicios": [1]
+}
+
+###
+
+### ❌ Crear cita sin servicios
+POST {{BackendSpa_HostAddress}}/api/citas
+Content-Type: application/json
+
+{
+  "nombreCliente": "Maria Lopez",
+  "email": "maria@gmail.com",
+  "telefono": "3312345678",
+  "fecha": "2026-05-07",
+  "horaInicio": "11:00:00",
+  "idServicios": []
+}
+
+###
+
+### ❌ Crear cita con telefono invalido
+POST {{BackendSpa_HostAddress}}/api/citas
+Content-Type: application/json
+
+{
+  "nombreCliente": "Maria Lopez",
+  "email": "maria@gmail.com",
+  "telefono": "abcdefghij",
+  "fecha": "2026-05-06",
+  "horaInicio": "10:00:00",
+  "idServicios": [1]
+}
+
+###
+
+### ✅ Webhook pago aprobado
+POST {{BackendSpa_HostAddress}}/api/pagos/webhook
+Content-Type: application/json
+
+{
+  "type": "payment",
+  "data": {
+    "id": "123456789"
+  }
+}
+
+###
+
+### ❌ Webhook tipo ignorado
+POST {{BackendSpa_HostAddress}}/api/pagos/webhook
+Content-Type: application/json
+
+{
+  "type": "merchant_order",
+  "data": {
+    "id": "123456789"
+  }
+}
+
+###
+
+### ❌ Webhook sin data
+POST {{BackendSpa_HostAddress}}/api/pagos/webhook
+Content-Type: application/json
+
+{
+  "type": "payment",
+  "data": null
+}
+
+###
+
+### ✅ Cancelar cita existente
+DELETE {{BackendSpa_HostAddress}}/api/citas/CancelarCita/12
+
+###
