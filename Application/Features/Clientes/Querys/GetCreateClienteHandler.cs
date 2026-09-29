@@ -17,7 +17,7 @@ namespace BackendSpa.Application.Features.Clientes.Querys
         }
         public async Task<Responsive<ClienteDto>> Handle(GetCreateCliente request, CancellationToken cancellationToken)
         {
-            var cliente = request.cliente;
+            var cliente = request.Client;
             const string validatorName = @"[A-Za-z]";
             const string validatorEmail = @"[a-z0-9.]+@[a-z0-9]+\.[a-z]+";
             const string validatorNumber = @"^\+\d{10,15}$";

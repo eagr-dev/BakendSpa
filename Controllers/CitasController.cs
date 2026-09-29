@@ -22,7 +22,7 @@ namespace BackendSpa.Controllers
         [HttpPost]
         public async Task<IActionResult> CrearCita([FromBody] CrearCitaDto cita)
         {
-            var resultado = await _mediator.Send(new GetCreateCita(cita));
+            var resultado = await _mediator.Send(new GetCreateCitaQuery(cita));
 
             if (!resultado.Success)
                 return BadRequest(resultado.Mensaje);
@@ -43,9 +43,10 @@ namespace BackendSpa.Controllers
         }
 
         [HttpDelete("cancelarcita/{id}")]
-        public async Task<IActionResult> CancelarCita([FromRoute] int id)
+        public async Task<IActionResult> CancelarCita([FromRoute] int id, 
+            [FromQuery] string telefono, [FromQuery] string email)
         {
-            var resultado = await _mediator.Send(new CancelarCitaCommand(id));
+            var resultado = await _mediator.Send(new CancelarCitaCommand(id, telefono, email));
 
             if (!resultado.Success)
                 return BadRequest(resultado.Mensaje);

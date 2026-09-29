@@ -3,5 +3,5 @@ using MediatR;
 
 namespace BackendSpa.Application.Features.Citas.Querys
 {
-    public record CancelarCitaCommand(int IdCita) : IRequest<Responsive<bool>>;
+    public record CancelarCitaCommand(int IdCita, string NumeroTelefonico, string Email) : IRequest<Responsive<bool>>;
 }

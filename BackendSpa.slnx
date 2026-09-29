@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../PruebasSpa/PruebasSpa.csproj" Id="a7734cde-e753-4c1e-8ece-2c20bab32e21" />
   <Project Path="BackendSpa.csproj" />
 </Solution>

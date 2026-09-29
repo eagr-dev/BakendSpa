@@ -36,6 +36,7 @@ namespace BackendSpa.Infrastructure.BackgroundServices
             var limite = DateTime.UtcNow.AddHours(-1); // más de 1 hora pendiente
 
             var citasPendientes = await db.Citas
+                .Include(c => c.Cliente)
                 .Where(c => c.Estado == EstadoCita.Pendiente && c.CreadoEn < limite)
                 .ToListAsync(cancellationToken);
 
@@ -43,7 +44,7 @@ namespace BackendSpa.Infrastructure.BackgroundServices
 
             foreach (var cita in citasPendientes)
             {
-                await mediator.Send(new CancelarCitaCommand(cita.IdCita), cancellationToken);
+                await mediator.Send(new CancelarCitaCommand(cita.IdCita, cita.Cliente.Telefono, cita.Cliente.Email), cancellationToken);
                 _logger.LogInformation("Cita {IdCita} cancelada por timeout", cita.IdCita);
             }
         }

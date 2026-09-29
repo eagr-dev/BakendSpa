@@ -5,7 +5,7 @@ using MediatR;
 namespace BackendSpa.Application.Features.Clientes.Querys
 {
     public record GetClienteById(int id) : IRequest<Responsive<ClienteDto>>;
-    public record GetClienteByName(string Name) : IRequest<Responsive<ClienteDto>>;
+    public record GetClienteByPhone(string PhoneNumber) : IRequest<Responsive<ClienteDto>>;
     public record GetClienteByEmail(string Email) : IRequest<Responsive<ClienteDto>>;
-    public record GetCreateCliente(ClienteDto cliente) : IRequest<Responsive<ClienteDto>>;
+    public record GetCreateCliente(ClienteDto Client) : IRequest<Responsive<ClienteDto>>;
 }

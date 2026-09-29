@@ -28,6 +28,16 @@ namespace BackendSpa.Infrastructure.Persistance
                     v => Enum.Parse<EstadoCita>(v, ignoreCase: true)
                 );
 
+            modelBuilder.Entity<Cliente>()
+            .HasIndex(c => c.Email)
+            .IsUnique()
+            .HasDatabaseName("email");
+
+            modelBuilder.Entity<Cliente>()
+            .HasIndex(c => c.Telefono)
+            .IsUnique()
+            .HasDatabaseName("UQ_clientes_telefono");
+
             modelBuilder.Entity<Notificacion>()
                 .Property(n => n.Tipo)
                 .HasColumnType("enum('cliente','duena')")

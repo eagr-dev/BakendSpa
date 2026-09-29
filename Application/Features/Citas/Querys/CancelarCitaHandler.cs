@@ -26,8 +26,12 @@ namespace BackendSpa.Application.Features.Citas.Querys
         {
             var cita = await _db.Citas
                 .Include(c => c.Cliente)
-                .FirstOrDefaultAsync(c => c.IdCita == request.IdCita, cancellationToken) ??
-                throw new ArgumentException($"la cita con el id {request.IdCita} no existe");
+                .FirstOrDefaultAsync(c => c.IdCita == request.IdCita 
+                && (c.Cliente.Telefono == request.NumeroTelefonico
+                || c.Cliente.Email == request.Email), cancellationToken) ??
+                throw new ArgumentException($"el email {request.Email} o el numero telefonico {request.NumeroTelefonico} " +
+                $"proporcionados no son iguales al de la cita");
+                //throw new ArgumentException($"la cita con el id {request.IdCita} no existe");
 
             if (cita.Estado == Domain.EstadoCita.Cancelada) return new Responsive<bool>(false,
                 $"La cita con el id {request.IdCita} ya fue cancelada", false);

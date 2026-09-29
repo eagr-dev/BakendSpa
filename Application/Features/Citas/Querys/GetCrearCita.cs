@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendSpa.Application.Features.Citas.Querys
 {
-    public class GetCrearCita : IRequestHandler<GetCreateCita, Responsive<CitaDto>>
+    public class GetCrearCita : IRequestHandler<GetCreateCitaQuery, Responsive<CitaDto>>
     {
         private readonly IAppDbContext _db;
         private readonly ISender _mediator;
@@ -30,7 +30,7 @@ namespace BackendSpa.Application.Features.Citas.Querys
             _anticipo = anticipo;
         }
 
-        public async Task<Responsive<CitaDto>> Handle(GetCreateCita request, CancellationToken cancellationToken)
+        public async Task<Responsive<CitaDto>> Handle(GetCreateCitaQuery request, CancellationToken cancellationToken)
         {
             var citaReq = request.cita;
 
@@ -68,25 +68,42 @@ namespace BackendSpa.Application.Features.Citas.Querys
                 }
 
                 // B) Obtener o Crear Cliente
-                var cliente = await _db.Clientes
-                    .FirstOrDefaultAsync(c => c.Nombre == citaReq.NombreCliente, cancellationToken);
+                var clienteResponseEmail = await _mediator.Send(new GetClienteByEmail(citaReq.Email), cancellationToken);
+                var clienteResponseNumero = await _mediator.Send(new GetClienteByPhone(citaReq.Telefono), cancellationToken);
 
-                if (cliente is null)
+                ClienteDto clienteDto;
+
+                if (clienteResponseEmail.Success && clienteResponseEmail.Data is not null)
                 {
-                    cliente = new Cliente
-                    {
-                        Nombre = citaReq.NombreCliente,
-                        Email = citaReq.Email,
-                        Telefono = citaReq.Telefono
-                    };
-                    _db.Clientes.Add(cliente);
-                    await _db.SaveChangesAsync(cancellationToken);
+                    // El cliente ya existía en la DB
+                    clienteDto = clienteResponseEmail.Data;
                 }
+                else if(clienteResponseNumero.Success && clienteResponseNumero.Data is not null)
+                {
+                    // El cliente ya existía en la DB
+                    clienteDto = clienteResponseNumero.Data;
+                }
+                else
+                {
+                    // El cliente no existe: crearlo usando tu handler validado (aplica Regex automáticamente)
+                    var nuevoClienteDto = new ClienteDto(0, citaReq.NombreCliente, citaReq.Email, citaReq.Telefono);
+                    var crearClienteResponse = await _mediator.Send(new GetCreateCliente(nuevoClienteDto), cancellationToken);
+
+                    if (!crearClienteResponse.Success)
+                    {
+                        // Si falló alguna Regex de nombre, email o teléfono
+                        await transaction.RollbackAsync(cancellationToken);
+                        return new Responsive<CitaDto>(false, crearClienteResponse.Mensaje, null);
+                    }
+
+                    clienteDto = crearClienteResponse.Data!;
+                }
+
 
                 // C) Crear Cita
                 var nuevaCita = new Cita
                 {
-                    IdCliente = cliente.IdCliente,
+                    IdCliente = clienteDto.IdCliente,
                     Fecha = citaReq.Fecha,
                     HoraInicio = citaReq.HoraInicio,
                     HoraFin = horaFin,
@@ -125,8 +142,8 @@ namespace BackendSpa.Application.Features.Citas.Querys
 
                 var dto = new CitaDto(
                     nuevaCita.IdCita,
-                    cliente.IdCliente,
-                    cliente.Nombre,
+                    clienteDto.IdCliente,
+                    clienteDto.Nombre,
                     nuevaCita.Fecha,
                     nuevaCita.HoraInicio,
                     nuevaCita.HoraFin,
@@ -140,7 +157,8 @@ namespace BackendSpa.Application.Features.Citas.Querys
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return new Responsive<CitaDto>(false, $"Error al procesar la cita: {ex.Message}", null);
+                var mensajeDetallado = ex.InnerException != null ? $"{ex.Message} | Detalle: {ex.InnerException.Message}" : ex.Message;
+                return new Responsive<CitaDto>(false, $"Error al procesar la cita: {mensajeDetallado}", null);
             }
         }
     }
