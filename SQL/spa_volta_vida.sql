@@ -3,11 +3,10 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-05-2026 a las 18:24:43
+-- Tiempo de generación: 29-09-2026 a las 23:35:10
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
-SET SESSION sql_require_primary_key = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -60,9 +59,6 @@ CREATE TABLE `citas` (
   `creado_en` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `citas`
---
 
 -- --------------------------------------------------------
 
@@ -76,10 +72,6 @@ CREATE TABLE `cita_servicios` (
   `id_servicio` int(11) NOT NULL,
   `precio_unitario` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `cita_servicios`
---
 
 -- --------------------------------------------------------
 
@@ -95,10 +87,6 @@ CREATE TABLE `clientes` (
   `creado_en` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `clientes`
---
-
 
 -- --------------------------------------------------------
 
@@ -113,12 +101,11 @@ CREATE TABLE `notificaciones` (
   `tipo` enum('cliente','duena') NOT NULL,
   `mensaje` text NOT NULL,
   `status` varchar(50) DEFAULT 'pendiente',
-  `enviado_en` datetime DEFAULT NULL
+  `enviado_en` datetime DEFAULT NULL,
+  `intentos` int(11) NOT NULL DEFAULT 0,
+  `errorDetalle` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `notificaciones`
---
 
 -- --------------------------------------------------------
 
@@ -139,10 +126,6 @@ CREATE TABLE `pagos` (
   `processing_mode` varchar(100) DEFAULT NULL,
   `creado_en` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `pagos`
---
 
 -- --------------------------------------------------------
 
@@ -227,7 +210,9 @@ ALTER TABLE `cita_servicios`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id_cliente`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `UQ_clientes_telefono` (`telefono`),
+  ADD KEY `IX_clientes_telefono` (`telefono`);
 
 --
 -- Indices de la tabla `notificaciones`
@@ -264,31 +249,31 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de la tabla `citas`
 --
 ALTER TABLE `citas`
-  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `cita_servicios`
 --
 ALTER TABLE `cita_servicios`
-  MODIFY `id_cita_servicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id_cita_servicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1020;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `servicios`
