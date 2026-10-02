@@ -1,4 +1,5 @@
 ﻿using BackendSpa.Application.Common.Responsive;
+using System.Data.Common;
 using System.Text.Json;
 
 namespace BackendSpa.Middlewares
@@ -34,6 +35,12 @@ namespace BackendSpa.Middlewares
             {
                 _logger.LogWarning("Error de validación: {Message}", ex.Message);
                 await EscribirRespuesta(context, StatusCodes.Status400BadRequest, ex.Message);
+            }
+            catch(DbException ex)
+            {
+                _logger.LogError(ex, "Error de base de datos");
+                await EscribirRespuesta(context, StatusCodes.Status503ServiceUnavailable,
+                    "Ocurrió un error en la base de datos, intenta de nuevo más tarde");
             }
             catch (Exception ex)
             {
